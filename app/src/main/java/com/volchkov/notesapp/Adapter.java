@@ -1,6 +1,7 @@
 package com.volchkov.notesapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,16 +9,22 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
+
 public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
-    private List<String> mData;
+    private List<String> mData1;
+    private List<String> mData2;
+    private List<String> mData3;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
+
     // data is passed into the constructor
-    Adapter(Context context, List<String> data) {
+    Adapter(Context context, List<String> data1, List<String> data2, List<String> data3) {
         this.mInflater = LayoutInflater.from(context);
-        this.mData = data;
+        this.mData1 = data1;
+        this.mData2 = data2;
+        this.mData3 = data3;
     }
 
     // inflates the row layout from xml when needed
@@ -30,16 +37,37 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        String title = mData.get(position);
+        String title = mData1.get(position);
+        String description = mData2.get(position);
+        String date = mData3.get(position);
         holder.myTextView1.setText(title);
-        holder.myTextView2.setText(title);
-        holder.myTextView3.setText(title);
+        holder.myTextView2.setText(description);
+        holder.myTextView3.setText(date);
+
+
+        holder.itemView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+                mData1.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, mData1.size());
+                Intent intent = new Intent(this, ll.class);
+                ll(intent);
+
+
+            }
+        });
+
+
     }
 
-    // total number of rows
+
+
+        // total number of rows
     @Override
     public int getItemCount() {
-        return mData.size();
+        return mData1.size();
     }
 
 
@@ -65,7 +93,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     // convenience method for getting data at click position
     String getItem(int id) {
-        return mData.get(id);
+        return mData1.get(id);
     }
 
     // allows clicks events to be caught

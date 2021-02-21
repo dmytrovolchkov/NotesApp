@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity implements com.volchkov.note
     Adapter adapter;
     FloatingActionButton f;
     TextView des;
+
+
                     //Связь с интернетом
             private boolean hasConnection(MainActivity mainActivity) {
                 ConnectivityManager cm = (ConnectivityManager) mainActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements com.volchkov.note
             Toast.makeText(this, "Active networks OK ", Toast.LENGTH_LONG).show();
         } else Toast.makeText(this, "No active networks... ", Toast.LENGTH_LONG).show();
 
-        //Прогресс Бар ???
+        //Прогресс Бар
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setVisibility(ProgressBar.VISIBLE);
 
@@ -66,16 +68,19 @@ public class MainActivity extends AppCompatActivity implements com.volchkov.note
 
         // data to populate the RecyclerView with
         ArrayList<String> Titles = new ArrayList<>();
-        Titles.add("LongTitleLongTitleLongTitleLongTitleLongTitleLongTitle");
-        Titles.add("дата " + date);
+        ArrayList<String> Descs = new ArrayList<>();
+        ArrayList<String> Dates = new ArrayList<>();
+        Titles.add("LongTitleLongTitleLongTitleLongTitleLongTitleLongTitleLongTitleLongTitleLongTitleLongTitleLongTitleLongTitle");
+        Descs.add("Line " + String.valueOf(Titles.size()));
+        Dates.add("time " + date);
+
 
         // set up the RecyclerView
         RecyclerView recyclerView = findViewById(R.id.rv);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new Adapter(this, Titles);
+        adapter = new Adapter(this, Titles, Descs, Dates);
         adapter.setClickListener(this);
         recyclerView.setAdapter(adapter);
-
 
 
 
@@ -91,15 +96,20 @@ public class MainActivity extends AppCompatActivity implements com.volchkov.note
             public void onClick(View v) {
 // Меняем текст в TextView (Titles)
 
+                ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+                progressBar.setVisibility(ProgressBar.INVISIBLE);
                 @SuppressLint("SimpleDateFormat")
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 String date = sdf.format(Calendar.getInstance().getTime());
 
-                Titles.add("дата " + date);
+                Titles.add(0,"LongTi");
+                Descs.add(0, "Line " + String.valueOf(Titles.size()));
+                Dates.add(0,"time " + date);
+                recyclerView.smoothScrollToPosition(0);
                 // set up the RecyclerView
                 RecyclerView recyclerView = findViewById(R.id.rv);
                 recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                adapter = new Adapter(MainActivity.this, Titles);
+                adapter = new Adapter(MainActivity.this, Titles, Descs, Dates);
                 adapter.setClickListener(MainActivity.this);
                 recyclerView.setAdapter(adapter);
 
@@ -117,13 +127,13 @@ public class MainActivity extends AppCompatActivity implements com.volchkov.note
 
 
         //Прогресс бар - невидимый ???
-        progressBar.setVisibility(ProgressBar.INVISIBLE);
+        //progressBar.setVisibility(ProgressBar.INVISIBLE);
     }
         //Нажатие на каждую запись
     @Override
     public void onItemClick(View view, int position) {
         Toast.makeText(this, "You clicked " + adapter.getItem(position) + " on row number " + position, Toast.LENGTH_SHORT).show();
-        }
+    }
 
 
 

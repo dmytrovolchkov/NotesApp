@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.net.NetworkCapabilities;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -21,24 +21,43 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-
-        //Главный поток
+//Главный поток
 public class MainActivity extends AppCompatActivity implements com.volchkov.notesapp.Adapter.ItemClickListener {
     //Переменные
     Adapter adapter;
     FloatingActionButton f;
     TextView des;
 
+    class MyThread implements Runnable {
+        public void run(){
+            TextView text = findViewById(R.id.textView);
+            text.setText(Thread.currentThread().getName());
+            try {
+                Thread.sleep(5*1000); // на 5 секунд
+            } catch (Exception e){}
+
+        }
+    }
 
                     //Связь с интернетом
-            private boolean hasConnection(MainActivity mainActivity) {
-                ConnectivityManager cm = (ConnectivityManager) mainActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo activeNW = cm.getActiveNetworkInfo();
-                if (activeNW != null && activeNW.isConnected()) {
-                    return true;
-                }
-                return false;}
+            private String getConnectionTransportType() {
 
+                ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+                NetworkCapabilities capabilities = cm.getNetworkCapabilities(cm.getActiveNetwork());
+                if (capabilities != null) {
+                    if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                        return "vpn";
+                    } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                        return "wifi";
+                    } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                        return "cellurar";
+                    }
+                    return "other_connection";
+                } else {
+                    return "no_connection";
+                }
+            }
         //Формат времени
         @SuppressLint("SimpleDateFormat")
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
@@ -51,10 +70,11 @@ public class MainActivity extends AppCompatActivity implements com.volchkov.note
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Проверка интернета
-        if (hasConnection(this)) {
-            Toast.makeText(this, "Active networks OK ", Toast.LENGTH_LONG).show();
-        } else Toast.makeText(this, "No active networks... ", Toast.LENGTH_LONG).show();
+
+//Потоки
+        Thread myThread = new Thread(new MyThread(),"MyThread");
+        for(int i=1; i < 6; i++)
+        myThread.start();
 
         //Прогресс Бар
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -94,7 +114,6 @@ public class MainActivity extends AppCompatActivity implements com.volchkov.note
         View.OnClickListener oclBtnOk = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-// Меняем текст в TextView (Titles)
 
                 ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
                 progressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -102,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements com.volchkov.note
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 String date = sdf.format(Calendar.getInstance().getTime());
 
+// Меняем текст в TextView (Titles)
                 Titles.add(0,"LongTi");
                 Descs.add(0, "Line " + String.valueOf(Titles.size()));
                 Dates.add(0,"time " + date);
@@ -116,6 +136,9 @@ public class MainActivity extends AppCompatActivity implements com.volchkov.note
                 //Всплывающее снизу окошко
                 Snackbar snackbar = Snackbar.make(v, "New message created", Snackbar.LENGTH_LONG);
                 snackbar.show();
+
+                //Проверка интернета
+                Toast.makeText(MainActivity.this, getConnectionTransportType(), Toast.LENGTH_LONG).show();
 
 
 

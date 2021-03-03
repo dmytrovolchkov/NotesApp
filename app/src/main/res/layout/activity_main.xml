@@ -37,4 +37,14 @@
         android:layout_centerVertical="true"
         android:visibility="invisible" />
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rv"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="69dp"
+        android:layout_toStartOf="@+id/fab"
+        android:text="TextView" />
+
 </RelativeLayout>

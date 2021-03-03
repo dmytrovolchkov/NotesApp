@@ -1,7 +1,6 @@
 package com.volchkov.notesapp;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,9 +51,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
                 mData1.remove(position);
                 notifyItemRemoved(position);
                 notifyItemRangeChanged(position, mData1.size());
-                Intent intent = new Intent(this, ll.class);
-                ll(intent);
-
 
             }
         });
